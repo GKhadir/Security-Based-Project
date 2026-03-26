@@ -4,12 +4,23 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
+/**
+ * Main entry point for the Spring Boot application.
+ */
 @SpringBootApplication
 @EnableCaching
-public class SbApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SbApplication.class, args);
-	}
-
+public final class SbApplication {
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private SbApplication() {
+    }
+    /**
+     * Main method to launch the application.
+     *
+     * @param args application arguments
+     */
+    public static void main(final String[] args) {
+        SpringApplication.run(SbApplication.class, args);
+    }
 }

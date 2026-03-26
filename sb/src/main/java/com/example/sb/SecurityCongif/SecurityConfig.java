@@ -10,20 +10,36 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class for defining
+ * authentication and authorization rules.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * JWT filter for validating tokens in requests.
+     */
     @Autowired
     private JwtFilter jwtFilter;
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http the HttpSecurity configuration
+     * @return configured SecurityFilterChain
+     * @throws Exception if configuration fails
+     */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http)
+            throws Exception {
 
-        http.csrf(c->c.disable())
+        http.csrf(c -> c.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/user/profile").hasRole("ADMIN")
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/users").hasRole("ADMIN")
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
@@ -31,16 +47,21 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(
+                jwtFilter,
+                UsernamePasswordAuthenticationFilter.class
+        );
 
         return http.build();
     }
 
+    /**
+     * Provides password encoder bean.
+     *
+     * @return BCrypt password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
 }
